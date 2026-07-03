@@ -2,11 +2,9 @@ import * as pdfjsLib from 'pdfjs-dist';
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import {
   Canvas,
-  Circle,
   Line,
   Path,
   PencilBrush,
-  Rect,
   StaticCanvas,
   Textbox,
 } from 'fabric';
@@ -14,7 +12,7 @@ import { PDFDocument } from 'pdf-lib';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-/** @typedef {'hand'|'select'|'text'|'rect'|'circle'|'draw-free'|'draw-line'|'draw-wave'|'draw-double-line'} ToolMode */
+/** @typedef {'hand'|'text'|'draw-free'|'draw-line'|'draw-wave'|'draw-double-line'} ToolMode */
 /** @typedef {'page'|'scroll'} ViewMode */
 /** @typedef {'light'|'dark'} PreviewTheme */
 
@@ -35,6 +33,8 @@ export class PdfEditor {
     this.strokeColorEl = root.querySelector('#stroke-color');
     this.brushWidthEl = root.querySelector('#brush-width');
     this.brushWidthLabel = root.querySelector('#brush-width-label');
+    this.strokeColorDotEl = root.querySelector('#stroke-color-dot');
+    this.themeIconEl = root.querySelector('#theme-icon');
 
     /** @type {pdfjsLib.PDFDocumentProxy|null} */
     this.pdfDoc = null;
@@ -98,6 +98,8 @@ export class PdfEditor {
     this._bindUi();
     this._setupViewportGestures();
     this._setupKeyboardShortcuts();
+    this._syncStrokeColorDot();
+    this.applyDocThemeStyles();
     this._updateToolbarState();
   }
 
@@ -137,6 +139,8 @@ export class PdfEditor {
       /** @type {HTMLInputElement} */ (e.target).value = '';
     });
 
+    this.root.querySelector('#empty-open-btn')?.addEventListener('click', () => this._openFilePicker());
+
     this.bodyEl.addEventListener('dragover', (e) => {
       e.preventDefault();
       this.bodyEl.classList.add('is-dragover');
@@ -168,23 +172,21 @@ export class PdfEditor {
       });
     });
 
-    this.root.querySelectorAll('[data-shape]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const shape = btn.getAttribute('data-shape');
-        if (shape === 'rect') this.onRectTool();
-        else this.onCircleTool();
-        this._closeDropdowns();
-      });
-    });
-
     this.root.querySelectorAll('.tb-dropdown > .tb-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const dropdown = btn.closest('.tb-dropdown');
         const wasOpen = dropdown?.classList.contains('is-open');
         this._closeDropdowns();
-        if (!wasOpen) dropdown?.classList.add('is-open');
+        if (!wasOpen) {
+          dropdown?.classList.add('is-open');
+          this._positionDropdown(dropdown);
+        }
       });
+    });
+
+    this.root.querySelectorAll('.tb-dropdown').forEach((dropdown) => {
+      dropdown.addEventListener('click', (e) => e.stopPropagation());
     });
 
     document.addEventListener('click', () => this._closeDropdowns());
@@ -204,8 +206,16 @@ export class PdfEditor {
     });
     this.pageInputEl.addEventListener('blur', () => this.onPageInputBlur());
 
+    this.root.querySelector('#btn-page-prev')?.addEventListener('click', () => {
+      this.goToPage(this.currentPage - 1);
+    });
+    this.root.querySelector('#btn-page-next')?.addEventListener('click', () => {
+      this.goToPage(this.currentPage + 1);
+    });
+
     this.strokeColorEl.addEventListener('input', () => {
       this.strokeColor = this.strokeColorEl.value;
+      this._syncStrokeColorDot();
       this.applyToolToAllFabrics();
     });
 
@@ -227,8 +237,56 @@ export class PdfEditor {
     });
   }
 
+  _openFilePicker() {
+    this.fileInputEl.click();
+  }
+
+  _syncStrokeColorDot() {
+    if (this.strokeColorDotEl) {
+      this.strokeColorDotEl.style.background = this.strokeColor;
+    }
+  }
+
+  _positionDropdown(dropdown) {
+    const menu = dropdown?.querySelector('.tb-dropdown-menu');
+    const trigger = dropdown?.querySelector(':scope > .tb-btn');
+    if (!menu || !trigger) return;
+
+    menu.style.visibility = 'hidden';
+    menu.style.display = 'block';
+
+    const rect = trigger.getBoundingClientRect();
+    let left = rect.left;
+    let top = rect.bottom + 6;
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+
+    const menuRect = menu.getBoundingClientRect();
+    if (left + menuRect.width > window.innerWidth - 8) {
+      left = Math.max(8, window.innerWidth - menuRect.width - 8);
+    }
+    if (left < 8) left = 8;
+    if (top + menuRect.height > window.innerHeight - 8) {
+      top = Math.max(8, rect.top - menuRect.height - 6);
+    }
+
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+    menu.style.visibility = '';
+  }
+
+  _resetDropdownMenus() {
+    this.root.querySelectorAll('.tb-dropdown-menu').forEach((menu) => {
+      menu.style.left = '';
+      menu.style.top = '';
+      menu.style.visibility = '';
+      menu.style.display = '';
+    });
+  }
+
   _closeDropdowns() {
     this.root.querySelectorAll('.tb-dropdown.is-open').forEach((el) => el.classList.remove('is-open'));
+    this._resetDropdownMenus();
   }
 
   _updateToolbarState() {
@@ -237,6 +295,7 @@ export class PdfEditor {
     toolbar?.classList.toggle('is-readonly', disabled);
 
     this.root.querySelectorAll('.tb-btn:not(label), .tb-page input').forEach((el) => {
+      if (el.closest('.tb-no-readonly')) return;
       if (el instanceof HTMLButtonElement || el instanceof HTMLInputElement) {
         el.disabled = disabled;
       }
@@ -255,9 +314,33 @@ export class PdfEditor {
     this.pageInputEl.value = this.pdfLoaded ? String(this.currentPage) : '—';
     this.pageInputEl.disabled = disabled;
 
-    this.root.querySelector('#btn-toggle-theme').textContent =
-      this.previewTheme === 'light' ? '深色文档' : '浅色文档';
+    const showPageNav = this.pdfLoaded && this.viewMode === 'page';
+    const prevBtn = this.root.querySelector('#btn-page-prev');
+    const nextBtn = this.root.querySelector('#btn-page-next');
+    prevBtn?.toggleAttribute('hidden', !showPageNav);
+    nextBtn?.toggleAttribute('hidden', !showPageNav);
+    if (prevBtn instanceof HTMLButtonElement) {
+      prevBtn.disabled = disabled || this.currentPage <= 1;
+    }
+    if (nextBtn instanceof HTMLButtonElement) {
+      nextBtn.disabled = disabled || this.currentPage >= this.totalPages;
+    }
+
+    this._updateThemeButton();
     this.bodyEl.classList.toggle('is-hand', this.activeTool === 'hand' && this.pdfLoaded);
+  }
+
+  _updateThemeButton() {
+    const btn = this.root.querySelector('#btn-toggle-theme');
+    const use = this.themeIconEl?.querySelector('use');
+    if (!btn || !use) return;
+
+    const isDark = this.previewTheme === 'dark';
+    use.setAttribute('href', isDark ? '#icon-sun' : '#icon-moon');
+    btn.title = isDark ? '切换浅色文档' : '切换深色文档';
+    btn.classList.toggle('is-moon', !isDark);
+    btn.classList.toggle('is-sun', isDark);
+    btn.classList.remove('is-active');
   }
 
   _setLoading(on) {
@@ -290,11 +373,22 @@ export class PdfEditor {
     return this.scrollTextLayerRefs.get(pageNum);
   }
 
+  applyDocThemeStyles() {
+    this.root.classList.toggle('theme-dark', this.previewTheme === 'dark');
+    const themeClass = this.pageThemeClass;
+    this.root.querySelectorAll('.pdf-editor__page-inner, .pdf-editor__page-placeholder').forEach((el) => {
+      el.classList.remove('is-light-doc', 'is-dark-doc');
+      el.classList.add(themeClass);
+    });
+    this._updateThemeButton();
+  }
+
   async togglePreviewTheme() {
     this.previewTheme = this.previewTheme === 'light' ? 'dark' : 'light';
-    this.root.classList.toggle('theme-dark', this.previewTheme === 'dark');
     this.strokeColor = this.previewTheme === 'dark' ? '#ffffff' : '#e74c3c';
-    this.strokeColorEl.value = this.strokeColor;
+    if (this.strokeColorEl) this.strokeColorEl.value = this.strokeColor;
+    this._syncStrokeColorDot();
+    this.applyDocThemeStyles();
     await this.rerenderPdfLayers();
     this.applyToolToAllFabrics();
     this._updateToolbarState();
@@ -575,7 +669,7 @@ export class PdfEditor {
     const isLineDraw = this.isLineDrawTool(tool);
     const isDraw = isDrawFree || isLineDraw;
     canvas.isDrawingMode = isDrawFree;
-    canvas.selection = tool === 'select' || tool === 'text';
+    canvas.selection = tool === 'text';
     canvas.skipTargetFind = isDraw;
     if (isDraw) {
       const brushCursor = this.getBrushCursor();
@@ -1050,55 +1144,12 @@ export class PdfEditor {
     canvas.requestRenderAll();
   }
 
-  addRectObject(canvas) {
-    canvas.add(
-      new Rect({
-        left: 60,
-        top: 60,
-        width: 160,
-        height: 80,
-        fill: 'transparent',
-        stroke: this.getAnnotationColor(),
-        strokeWidth: this.getStrokeWidth(),
-      }),
-    );
-    canvas.requestRenderAll();
-  }
-
-  addCircleObject(canvas) {
-    canvas.add(
-      new Circle({
-        left: 60,
-        top: 60,
-        radius: 50,
-        fill: 'transparent',
-        stroke: this.getAnnotationColor(),
-        strokeWidth: this.getStrokeWidth(),
-      }),
-    );
-    canvas.requestRenderAll();
-  }
-
   async onTextTool() {
     this.activeTool = 'text';
     const canvas = await this.ensureActiveFabric();
     if (!canvas) return this.toast('请等待当前页加载完成', 'error');
     this.addTextObject(canvas);
-    await this.setTool('select');
-  }
-
-  async onRectTool() {
-    const canvas = await this.ensureActiveFabric();
-    if (!canvas) return this.toast('请等待当前页加载完成', 'error');
-    this.addRectObject(canvas);
-    await this.setTool('select');
-  }
-
-  async onCircleTool() {
-    const canvas = await this.ensureActiveFabric();
-    if (!canvas) return this.toast('请等待当前页加载完成', 'error');
-    this.addCircleObject(canvas);
-    await this.setTool('select');
+    await this.setTool('text');
   }
 
   async deleteSelected() {

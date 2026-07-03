@@ -7,22 +7,42 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+      <symbol id="icon-open" viewBox="0 0 24 24"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></symbol>
+      <symbol id="icon-hand" viewBox="0 0 24 24"><path fill="currentColor" d="M18 11V6c0-1.1-.9-2-2-2s-2 .9-2 2v2h-1V4c0-1.1-.9-2-2-2s-2 .9-2 2v6h-1V5c0-1.1-.9-2-2-2S4 4.9 4 6v5.17C2.34 12.35 1 14.32 1 16.5 1 19.53 3.47 22 6.5 22h8.5c2.76 0 5-2.24 5-5v-6c0-1.1-.9-2-2-2s-2 .9-2 2z"/></symbol>
+      <symbol id="icon-pen" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42l-2.34-2.34a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></symbol>
+      <symbol id="icon-text" viewBox="0 0 24 24"><path fill="currentColor" d="M5 4v3h5.5v12h3V7H19V4H5z"/></symbol>
+      <symbol id="icon-undo" viewBox="0 0 24 24"><path fill="currentColor" d="M12.5 8c-2.65 0-5.05 1.04-6.9 2.75L2 8v9h9l-3.62-3.62C8.77 12.16 10.54 11.44 12.5 11.44c3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></symbol>
+      <symbol id="icon-brush" viewBox="0 0 24 24"><path fill="currentColor" d="M4 8h16v2H4V8zm0 5h12v2H4v-2zm0 5h8v2H4v-2z"/></symbol>
+      <symbol id="icon-zoom-out" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7V9z"/></symbol>
+      <symbol id="icon-zoom-in" viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM10 7H9v2H7v1h2v2h1v-2h2V9h-2V7z"/></symbol>
+      <symbol id="icon-fit-width" viewBox="0 0 24 24"><path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></symbol>
+      <symbol id="icon-more" viewBox="0 0 24 24"><path fill="currentColor" d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></symbol>
+      <symbol id="icon-save" viewBox="0 0 24 24"><path fill="currentColor" d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></symbol>
+      <symbol id="icon-export" viewBox="0 0 24 24"><path fill="currentColor" d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></symbol>
+      <symbol id="icon-chevron" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10l5 5 5-5H7z"/></symbol>
+      <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path fill="currentColor" d="M14 6l-6 6 6 6V6z"/></symbol>
+      <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path fill="currentColor" d="M10 6l6 6-6 6V6z"/></symbol>
+      <symbol id="icon-empty" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></symbol>
+      <symbol id="icon-sun" viewBox="0 0 24 24"><path fill="currentColor" d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 1 1 1v1.5a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zm0 17a1 1 0 0 1 1 1V21a1 1 0 1 1-2 0v-1.5a1 1 0 0 1 1-1zM4.22 5.64a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 0 1-1.41 1.41L4.22 7.05a1 1 0 0 1 0-1.41zm13.1 13.1a1 1 0 0 1 1.41 0l1.06 1.06a1 1 0 1 1-1.41 1.41l-1.06-1.06a1 1 0 0 1 0-1.41zM3 11a1 1 0 0 1 1-1h1.5a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1zm15.5 0a1 1 0 0 1 1-1H21a1 1 0 1 1 0 2h-1.5a1 1 0 0 1-1-1zM5.64 18.78a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 1 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0zm13.1-13.1a1 1 0 0 1 0-1.41l1.06-1.06a1 1 0 1 1 1.41 1.41l-1.06 1.06a1 1 0 0 1-1.41 0z"/></symbol>
+      <symbol id="icon-moon" viewBox="0 0 24 24"><path fill="currentColor" stroke="#fff" stroke-width="1.25" stroke-linejoin="round" d="M15.5 5.2a7.8 7.8 0 1 0 0 13.6 6.2 6.2 0 0 1 0-13.6z"/></symbol>
+    </svg>
+
     <div id="app" class="pdf-editor theme-light">
-      <!-- 工具栏 -->
       <div class="pdf-editor__toolbar">
         <div class="tb-group">
-          <label class="tb-btn" title="打开 PDF">
+          <label class="tb-btn tb-no-readonly" title="打开 PDF">
             <input type="file" id="file-input" accept=".pdf,application/pdf" hidden />
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 6h-8l-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-1 12H5V8h14v10z"/></svg>
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-open"/></svg>
           </label>
           <i class="tb-sep"></i>
           <button type="button" class="tb-btn is-active" data-tool="hand" title="拖拽移动 / 复制文字">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M10 9h4V6h3v3h3v4h-3v3h-3v-3h-4V9zM5 20h14v-2H5v2z"/></svg>
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-hand"/></svg>
           </button>
           <div class="tb-dropdown" id="pen-dropdown">
             <button type="button" class="tb-btn" title="画笔">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-              <svg class="tb-btn__arrow" viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+              <svg class="tb-icon" aria-hidden="true"><use href="#icon-pen"/></svg>
+              <svg class="tb-icon tb-icon--xs" aria-hidden="true"><use href="#icon-chevron"/></svg>
             </button>
             <div class="tb-dropdown-menu">
               <button type="button" data-pen="draw-free">自由画</button>
@@ -32,50 +52,18 @@
             </div>
           </div>
           <button type="button" class="tb-btn" data-tool="text" title="添加文字">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 17.25V21h7.5V19h-4.5V4.5H9V3H6v14.25zM13.5 6H11v9h2.5V6zm4.5 0h-2.5v9H18V6z"/></svg>
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-text"/></svg>
           </button>
-          <div class="tb-dropdown" id="shape-dropdown">
-            <button type="button" class="tb-btn" title="形状">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
-              <svg class="tb-btn__arrow" viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-            </button>
-            <div class="tb-dropdown-menu">
-              <button type="button" data-shape="rect">矩形</button>
-              <button type="button" data-shape="circle">圆形</button>
-            </div>
-          </div>
           <button type="button" class="tb-btn" id="btn-undo" title="撤销 (Ctrl+Z)">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05 1.04-6.9 2.75L2 8v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
-          </button>
-          <button type="button" class="tb-btn" data-tool="select" title="选择标注">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3zm13.71 2.29l-5.11 1.73 1.73 5.11 3.38-6.84z"/></svg>
-          </button>
-        </div>
-
-        <div class="tb-group tb-group--center">
-          <button type="button" class="tb-btn" id="btn-zoom-out" title="缩小">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"/></svg>
-          </button>
-          <button type="button" class="tb-btn tb-btn--text" id="btn-zoom-reset">100%</button>
-          <button type="button" class="tb-btn" id="btn-zoom-in" title="放大">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM10 7H9v2H7v1h2v2h1v-2h2V9h-2V7z"/></svg>
-          </button>
-          <button type="button" class="tb-btn" id="btn-fit-width" title="适应宽度">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-undo"/></svg>
           </button>
           <i class="tb-sep"></i>
-          <div class="tb-page">
-            <input type="text" id="page-input" value="1" disabled />
-            <span>/ <span id="total-pages">0</span></span>
-          </div>
-        </div>
-
-        <div class="tb-group tb-group--right">
-          <div class="tb-dropdown" id="more-dropdown">
-            <button type="button" class="tb-btn" title="更多">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          <div class="tb-dropdown tb-no-readonly" id="brush-dropdown">
+            <button type="button" class="tb-btn" title="颜色与粗细">
+              <span class="tb-color-dot" id="stroke-color-dot"></span>
+              <svg class="tb-icon" aria-hidden="true"><use href="#icon-brush"/></svg>
             </button>
-            <div class="tb-dropdown-menu tb-more-panel">
+            <div class="tb-dropdown-menu tb-panel">
               <div class="tb-more-row">
                 <span>颜色</span>
                 <input type="color" id="stroke-color" value="#e74c3c" />
@@ -84,6 +72,44 @@
                 <span>粗细 <span id="brush-width-label">3</span></span>
                 <input type="range" id="brush-width" min="1" max="30" value="3" />
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tb-group tb-group--center">
+          <button type="button" class="tb-btn" id="btn-zoom-out" title="缩小">
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-zoom-out"/></svg>
+          </button>
+          <button type="button" class="tb-btn tb-btn--text" id="btn-zoom-reset">100%</button>
+          <button type="button" class="tb-btn" id="btn-zoom-in" title="放大">
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-zoom-in"/></svg>
+          </button>
+          <button type="button" class="tb-btn" id="btn-fit-width" title="适应宽度">
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-fit-width"/></svg>
+          </button>
+          <i class="tb-sep"></i>
+          <div class="tb-page" id="page-nav">
+            <button type="button" class="tb-btn tb-btn--page-nav" id="btn-page-prev" title="上一页" hidden>
+              <svg class="tb-icon" aria-hidden="true"><use href="#icon-chevron-left"/></svg>
+            </button>
+            <input type="text" id="page-input" value="1" disabled />
+            <span>/ <span id="total-pages">—</span></span>
+            <button type="button" class="tb-btn tb-btn--page-nav" id="btn-page-next" title="下一页" hidden>
+              <svg class="tb-icon" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
+            </button>
+          </div>
+          <i class="tb-sep"></i>
+          <button type="button" class="tb-btn tb-btn--theme tb-no-readonly" id="btn-toggle-theme" title="切换深色文档">
+            <svg class="tb-icon tb-icon--theme" id="theme-icon" aria-hidden="true"><use href="#icon-moon"/></svg>
+          </button>
+        </div>
+
+        <div class="tb-group tb-group--right">
+          <div class="tb-dropdown" id="more-dropdown">
+            <button type="button" class="tb-btn" title="更多">
+              <svg class="tb-icon" aria-hidden="true"><use href="#icon-more"/></svg>
+            </button>
+            <div class="tb-dropdown-menu tb-panel">
               <div class="tb-more-row">
                 <span>预览</span>
                 <div class="tb-radio-group">
@@ -92,28 +118,31 @@
                 </div>
               </div>
               <div class="tb-more-row tb-more-row--actions">
-                <button type="button" id="btn-toggle-theme">深色文档</button>
                 <button type="button" id="btn-delete" class="danger">删除选中</button>
               </div>
             </div>
           </div>
           <button type="button" class="tb-btn" id="btn-save" title="保存">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-save"/></svg>
           </button>
           <button type="button" class="tb-btn" id="btn-export" title="导出">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            <svg class="tb-icon" aria-hidden="true"><use href="#icon-export"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- 预览区 -->
       <div id="body" class="pdf-editor__body">
         <div id="empty" class="pdf-editor__empty">
-          <svg viewBox="0 0 24 24" width="64" height="64" fill="#c0c4cc"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
-          <p>点击上方按钮打开 PDF，或将 PDF 文件拖入此区域</p>
+          <button type="button" class="pdf-editor__empty-card" id="empty-open-btn">
+            <span class="pdf-editor__empty-icon-wrap">
+              <svg class="pdf-editor__empty-icon" aria-hidden="true"><use href="#icon-empty"/></svg>
+            </span>
+            <p class="pdf-editor__empty-title">打开 PDF 开始阅读</p>
+            <p class="pdf-editor__empty-desc">点击此区域选择文件，或使用左上角按钮 / 拖入 PDF</p>
+          </button>
         </div>
         <div id="loading" class="pdf-editor__loading" hidden>
-          <div class="spinner"></div>
+          <div class="pdf-editor__loading-bar"></div>
         </div>
         <div id="page-view" class="pdf-editor__canvas-wrap" hidden></div>
         <div id="scroll-view" class="pdf-editor__scroll-list" hidden></div>

@@ -9,14 +9,21 @@ mkdirSync(outDir, { recursive: true });
 
 const sizes = [16, 48, 128];
 
+const COLORS = {
+  doc: [37, 99, 235],
+  fold: [29, 78, 216],
+  mark: [239, 68, 68],
+};
+
 function createPng(size) {
   const pixels = Buffer.alloc(size * size * 4);
+  const margin = Math.floor(size * 0.1);
+  const fold = Math.floor(size * 0.24);
+  const markWidth = Math.max(2, Math.floor(size * 0.08));
 
   for (let y = 0; y < size; y += 1) {
     for (let x = 0; x < size; x += 1) {
       const i = (y * size + x) * 4;
-      const margin = Math.floor(size * 0.12);
-      const fold = Math.floor(size * 0.22);
       const inDoc =
         x >= margin && x < size - margin && y >= margin && y < size - margin;
       const inFold =
@@ -24,16 +31,29 @@ function createPng(size) {
         && y >= margin
         && y < margin + fold
         && x - (size - margin - fold) + (y - margin) < fold;
+      const markY = size - margin - Math.floor(size * 0.22);
+      const inMark =
+        inDoc
+        && !inFold
+        && y >= markY - markWidth
+        && y <= markY + markWidth
+        && x >= margin + Math.floor(size * 0.18)
+        && x <= size - margin - Math.floor(size * 0.18);
 
-      if (inDoc && !inFold) {
-        pixels[i] = 231;
-        pixels[i + 1] = 76;
-        pixels[i + 2] = 60;
+      if (inMark) {
+        pixels[i] = COLORS.mark[0];
+        pixels[i + 1] = COLORS.mark[1];
+        pixels[i + 2] = COLORS.mark[2];
+        pixels[i + 3] = 255;
+      } else if (inDoc && !inFold) {
+        pixels[i] = COLORS.doc[0];
+        pixels[i + 1] = COLORS.doc[1];
+        pixels[i + 2] = COLORS.doc[2];
         pixels[i + 3] = 255;
       } else if (inFold) {
-        pixels[i] = 192;
-        pixels[i + 1] = 57;
-        pixels[i + 2] = 43;
+        pixels[i] = COLORS.fold[0];
+        pixels[i + 1] = COLORS.fold[1];
+        pixels[i + 2] = COLORS.fold[2];
         pixels[i + 3] = 255;
       } else {
         pixels[i + 3] = 0;

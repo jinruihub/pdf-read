@@ -1,28 +1,36 @@
 .pdf-editor {
-  --pe-bg: #ececec;
-  --pe-toolbar-bg: #f5f5f5;
-  --pe-toolbar-border: #ddd;
-  --pe-body-bg: #c8c8c8;
-  --pe-text: #303133;
-  --pe-text-secondary: #606266;
-  --pe-btn-color: #444;
-  --pe-btn-hover-bg: rgb(0 0 0 / 6%);
-  --pe-btn-active-color: #409eff;
-  --pe-btn-active-bg: rgb(64 158 255 / 12%);
-  --pe-sep: #ccc;
-  --pe-empty-bg: #fff;
-  --pe-empty-text: #909399;
+  --pe-bg: #f3f4f6;
+  --pe-toolbar-bg: #fff;
+  --pe-toolbar-border: #e5e7eb;
+  --pe-toolbar-shadow: 0 1px 3px rgb(0 0 0 / 6%), 0 1px 2px rgb(0 0 0 / 4%);
+  --pe-body-bg: #525659;
+  --pe-body-empty-bg: #ffffff;
+  --pe-text: #1f2937;
+  --pe-text-secondary: #6b7280;
+  --pe-btn-color: #374151;
+  --pe-btn-hover-bg: #f3f4f6;
+  --pe-btn-active-color: #2563eb;
+  --pe-btn-active-bg: #eff6ff;
+  --pe-sep: #e5e7eb;
+  --pe-empty-card-bg: #ffffff;
+  --pe-empty-card-border: #dbeafe;
+  --pe-empty-card-shadow: 0 8px 32px rgb(37 99 235 / 8%), 0 2px 8px rgb(15 23 42 / 4%);
+  --pe-empty-icon-bg: #eff6ff;
+  --pe-empty-icon: #3b82f6;
+  --pe-empty-text: #6b7280;
+  --pe-empty-title: #111827;
   --pe-input-bg: #fff;
-  --pe-input-border: #dcdfe6;
-  --pe-input-text: #606266;
-  --pe-page-shadow: 0 1px 6px rgb(0 0 0 / 15%);
-  --pe-selection-bg: rgb(0 100 255 / 35%);
+  --pe-input-border: #d1d5db;
+  --pe-input-text: #374151;
+  --pe-page-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+  --pe-selection-bg: rgb(37 99 235 / 28%);
+  --pe-accent: #2563eb;
 
   display: flex;
   flex-direction: column;
   height: 100vh;
   margin: 0;
-  padding: 12px;
+  padding: 0;
   box-sizing: border-box;
   color: var(--pe-text);
   background: var(--pe-bg);
@@ -31,28 +39,40 @@
 }
 
 .pdf-editor.theme-dark {
-  --pe-bg: #141414;
-  --pe-toolbar-bg: #1f1f1f;
-  --pe-toolbar-border: #3a3a3a;
-  --pe-body-bg: #0a0a0a;
-  --pe-text: #e5eaf3;
-  --pe-text-secondary: #a3a6ad;
-  --pe-btn-color: #cfd3dc;
-  --pe-btn-hover-bg: rgb(255 255 255 / 8%);
-  --pe-btn-active-color: #79bbff;
-  --pe-btn-active-bg: rgb(121 187 255 / 16%);
-  --pe-sep: #4c4d4f;
-  --pe-empty-bg: #1f1f1f;
-  --pe-empty-text: #a3a6ad;
-  --pe-input-bg: #262727;
-  --pe-input-border: #4c4d4f;
-  --pe-input-text: #cfd3dc;
-  --pe-page-shadow: 0 1px 8px rgb(0 0 0 / 45%);
-  --pe-selection-bg: rgb(100 180 255 / 40%);
+  --pe-bg: #111827;
+  --pe-toolbar-bg: #1f2937;
+  --pe-toolbar-border: #374151;
+  --pe-toolbar-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  --pe-body-bg: #0f1115;
+  --pe-body-empty-bg: #111827;
+  --pe-text: #f3f4f6;
+  --pe-text-secondary: #9ca3af;
+  --pe-btn-color: #d1d5db;
+  --pe-btn-hover-bg: #374151;
+  --pe-btn-active-color: #60a5fa;
+  --pe-btn-active-bg: rgb(96 165 250 / 14%);
+  --pe-sep: #4b5563;
+  --pe-empty-card-bg: #1f2937;
+  --pe-empty-card-border: #374151;
+  --pe-empty-card-shadow: 0 12px 40px rgb(0 0 0 / 35%);
+  --pe-empty-icon-bg: rgb(59 130 246 / 15%);
+  --pe-empty-icon: #60a5fa;
+  --pe-empty-text: #9ca3af;
+  --pe-empty-title: #f9fafb;
+  --pe-input-bg: #111827;
+  --pe-input-border: #4b5563;
+  --pe-input-text: #e5e7eb;
+  --pe-page-shadow: 0 2px 10px rgb(0 0 0 / 50%);
+  --pe-selection-bg: rgb(96 165 250 / 35%);
+  --pe-accent: #60a5fa;
 }
 
 * {
   box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 body {
@@ -70,30 +90,37 @@ body {
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 8px;
   align-items: center;
-  padding: 6px 10px;
-  margin-bottom: 8px;
+  padding: 8px 12px;
+  overflow: visible;
   background: var(--pe-toolbar-bg);
-  border: 1px solid var(--pe-toolbar-border);
-  border-radius: 6px;
+  border-bottom: 1px solid var(--pe-toolbar-border);
+  box-shadow: var(--pe-toolbar-shadow);
+  position: relative;
+  z-index: 20;
 }
 
-.pdf-editor__toolbar.is-readonly .tb-btn:not(label),
+.pdf-editor__toolbar.is-readonly .tb-btn:not(label):not(.tb-no-readonly),
 .pdf-editor__toolbar.is-readonly .tb-page input {
   pointer-events: none;
   opacity: 0.35;
 }
 
-.pdf-editor__toolbar.is-readonly label.tb-btn {
+.pdf-editor__toolbar.is-readonly label.tb-btn,
+.pdf-editor__toolbar.is-readonly .tb-no-readonly .tb-btn {
   pointer-events: auto;
   opacity: 1;
 }
 
 .pdf-editor__body {
   position: relative;
+  z-index: 1;
   flex: 1;
   overflow: auto;
   background: var(--pe-body-bg);
-  border-radius: 6px;
+}
+
+.pdf-editor__body:has(#empty:not([hidden])) {
+  background: var(--pe-body-empty-bg);
 }
 
 .pdf-editor__body.is-hand {
@@ -105,45 +132,103 @@ body {
   user-select: none;
 }
 
-.pdf-editor__body.is-dragover {
-  outline: 2px dashed var(--pe-btn-active-color);
-  outline-offset: -4px;
+.pdf-editor__body.is-dragover .pdf-editor__empty-card {
+  border-color: var(--pe-accent);
+  box-shadow: var(--pe-empty-card-shadow), 0 0 0 3px rgb(37 99 235 / 20%);
+  transform: scale(1.02);
 }
 
 .pdf-editor__empty {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
   align-items: center;
   justify-content: center;
   height: 100%;
-  min-height: 360px;
+  min-height: 320px;
+  padding: 24px;
+  background: transparent;
+}
+
+.pdf-editor__empty-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: min(100%, 400px);
+  padding: 44px 36px;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  background: var(--pe-empty-card-bg);
+  border: 2px dashed var(--pe-empty-card-border);
+  border-radius: 20px;
+  box-shadow: var(--pe-empty-card-shadow);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.pdf-editor__empty-card:hover {
+  border-color: var(--pe-accent);
+  box-shadow: var(--pe-empty-card-shadow), 0 0 0 4px rgb(37 99 235 / 10%);
+  transform: translateY(-2px);
+}
+
+.pdf-editor__empty-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 4px;
+  background: var(--pe-empty-icon-bg);
+  border-radius: 18px;
+}
+
+.pdf-editor__empty-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--pe-empty-icon);
+}
+
+.pdf-editor__empty-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--pe-empty-title);
+}
+
+.pdf-editor__empty-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
   color: var(--pe-empty-text);
-  background: var(--pe-empty-bg);
 }
 
 .pdf-editor__loading {
   position: absolute;
   inset: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgb(0 0 0 / 25%);
+  overflow: hidden;
+  pointer-events: none;
+  background: rgb(0 0 0 / 12%);
 }
 
-.spinner {
-  width: 36px;
-  height: 36px;
-  border: 3px solid rgb(255 255 255 / 30%);
-  border-top-color: #409eff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.pdf-editor__loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--pe-accent), transparent);
+  animation: loading-slide 1.2s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+@keyframes loading-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(350%);
   }
 }
 
@@ -152,7 +237,7 @@ body {
   flex-direction: column;
   gap: 8px;
   align-items: center;
-  padding: 8px;
+  padding: 12px;
   margin: 0 auto;
 }
 
@@ -167,20 +252,20 @@ body {
   font-size: 12px;
 }
 
-.pdf-editor__page-placeholder.is-light-doc {
-  color: #999;
+.pdf-editor__page-placeholder.is-light-doc,
+.pdf-editor__page-inner.is-light-doc {
   background: #fff;
 }
 
-.pdf-editor__page-placeholder.is-dark-doc {
-  color: #aaa;
+.pdf-editor__page-placeholder.is-dark-doc,
+.pdf-editor__page-inner.is-dark-doc {
   background: #000;
 }
 
 .pdf-editor__canvas-wrap {
   display: flex;
   justify-content: center;
-  padding: 8px;
+  padding: 12px;
   margin: 0 auto;
 }
 
@@ -192,12 +277,12 @@ body {
   box-shadow: var(--pe-page-shadow);
 }
 
-.pdf-editor__page-inner.is-light-doc {
-  background: #fff;
+.pdf-editor__page-placeholder.is-light-doc {
+  color: #999;
 }
 
-.pdf-editor__page-inner.is-dark-doc {
-  background: #000;
+.pdf-editor__page-placeholder.is-dark-doc {
+  color: #aaa;
 }
 
 .pdf-editor__pdf-layer {
@@ -268,6 +353,8 @@ body {
   justify-self: center;
   justify-content: center;
   flex-wrap: nowrap;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
 .tb-group--right {
@@ -280,8 +367,57 @@ body {
   display: inline-block;
   width: 1px;
   height: 20px;
-  margin: 0 4px;
+  margin: 0 6px;
   background: var(--pe-sep);
+}
+
+.tb-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.tb-icon--xs {
+  width: 10px;
+  height: 10px;
+  opacity: 0.55;
+}
+
+.tb-icon--theme {
+  width: 18px;
+  height: 18px;
+  overflow: visible;
+}
+
+.tb-btn--theme {
+  overflow: visible;
+  flex-shrink: 0;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1.5px solid transparent;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.tb-btn--theme.is-moon {
+  color: #e2e8f0;
+  background: linear-gradient(145deg, #475569, #334155);
+  border-color: #fff;
+  box-shadow: 0 1px 4px rgb(15 23 42 / 18%);
+}
+
+.tb-btn--theme.is-moon:hover {
+  background: linear-gradient(145deg, #64748b, #475569);
+}
+
+.tb-btn--theme.is-sun {
+  color: #fbbf24;
+  background: rgb(251 191 36 / 12%);
+  border-color: rgb(251 191 36 / 35%);
+}
+
+.tb-btn--theme.is-sun:hover {
+  background: rgb(251 191 36 / 20%);
 }
 
 .tb-btn {
@@ -289,15 +425,15 @@ body {
   gap: 1px;
   align-items: center;
   justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 6px;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 7px;
   font-size: 16px;
   color: var(--pe-btn-color);
   cursor: pointer;
   background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: background-color 0.15s, color 0.15s;
 }
 
@@ -308,7 +444,6 @@ body {
 .tb-btn.is-active {
   color: var(--pe-btn-active-color);
   background: var(--pe-btn-active-bg);
-  box-shadow: inset 0 -2px 0 var(--pe-btn-active-color);
 }
 
 .tb-btn:disabled {
@@ -317,8 +452,9 @@ body {
 }
 
 .tb-btn--text {
-  min-width: 48px;
+  min-width: 52px;
   font-size: 12px;
+  font-weight: 500;
 }
 
 .tb-page {
@@ -329,15 +465,26 @@ body {
   color: var(--pe-text-secondary);
 }
 
+.tb-btn--page-nav {
+  min-width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+.tb-btn--page-nav .tb-icon {
+  width: 16px;
+  height: 16px;
+}
+
 .tb-page input {
   width: 52px;
-  padding: 4px 6px;
+  padding: 5px 6px;
   font-size: 12px;
   color: var(--pe-input-text);
   text-align: center;
   background: var(--pe-input-bg);
   border: 1px solid var(--pe-input-border);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .tb-dropdown {
@@ -345,21 +492,36 @@ body {
 }
 
 .tb-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  z-index: 100;
+  position: fixed;
+  z-index: 200;
   display: none;
   min-width: 120px;
   padding: 4px 0;
   background: var(--pe-toolbar-bg);
   border: 1px solid var(--pe-toolbar-border);
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
 }
 
 .tb-dropdown.is-open .tb-dropdown-menu {
   display: block;
+}
+
+.tb-panel {
+  width: 220px;
+  padding: 12px;
+}
+
+.tb-color-dot {
+  width: 10px;
+  height: 10px;
+  border: 1px solid rgb(0 0 0 / 12%);
+  border-radius: 50%;
+}
+
+.tb-more-panel {
+  width: 240px;
+  padding: 12px;
 }
 
 .tb-dropdown-menu button {
@@ -379,9 +541,14 @@ body {
   background: var(--pe-btn-active-bg);
 }
 
-.tb-more-panel {
-  width: 240px;
-  padding: 12px;
+.tb-more-row input[type='color'] {
+  width: 32px;
+  height: 28px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--pe-toolbar-border);
+  border-radius: 6px;
 }
 
 .tb-more-row {
@@ -415,13 +582,13 @@ body {
   cursor: pointer;
   background: var(--pe-btn-hover-bg);
   border: 1px solid var(--pe-toolbar-border);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .tb-more-row--actions button.danger {
   color: #fff;
-  background: #f56c6c;
-  border-color: #f56c6c;
+  background: #ef4444;
+  border-color: #ef4444;
 }
 
 .tb-radio-group {
@@ -429,7 +596,7 @@ body {
   gap: 0;
   overflow: hidden;
   border: 1px solid var(--pe-toolbar-border);
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .tb-radio-group button {
@@ -454,15 +621,15 @@ body {
   padding: 10px 20px;
   font-size: 14px;
   color: #fff;
-  background: rgb(0 0 0 / 75%);
-  border-radius: 6px;
+  background: rgb(17 24 39 / 88%);
+  border-radius: 8px;
   transform: translateX(-50%);
 }
 
 .toast.is-error {
-  background: #f56c6c;
+  background: #ef4444;
 }
 
 .toast.is-success {
-  background: #67c23a;
+  background: #22c55e;
 }

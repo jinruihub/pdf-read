@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "vite",
+    "dev:ext": "vite build --watch",
     "build": "vite build",
     "icons": "node scripts/generate-icons.mjs"
   },

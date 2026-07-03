@@ -13,12 +13,34 @@ Chrome 扩展 — PDF 阅读与标注工具，功能 的 PDF 编辑器。
 - 标注颜色与粗细调节
 - 保存（合并标注到 PDF）与导出
 
-## 安装开发
+## 安装
 
 ```bash
 npm install
-npm run icons   # 生成扩展图标
+npm run icons   # 首次需要生成扩展图标
+```
+
+## 本地预览（推荐开发时使用）
+
+```bash
+npm run dev
+```
+
+浏览器会自动打开阅读器页面（默认 `http://localhost:5173/src/viewer/index.html`）。支持热更新，改代码后页面会自动刷新。
+
+- 点击工具栏按钮或拖拽本地 PDF 即可预览
+- 也可通过 URL 参数加载远程 PDF：`?url=https://example.com/file.pdf`（受目标站点 CORS 限制）
+
+## 构建 Chrome 扩展
+
+```bash
 npm run build   # 构建到 dist/
+```
+
+扩展开发时可使用监听模式，改代码后需在 `chrome://extensions/` 刷新扩展：
+
+```bash
+npm run dev:ext
 ```
 
 ## 加载扩展

@@ -2,31 +2,41 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { cpSync, mkdirSync } from 'fs';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   base: './',
-  build: {
-    outDir: 'dist',
-    emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        viewer: resolve(__dirname, 'src/viewer/index.html'),
-        background: resolve(__dirname, 'src/background.js'),
-      },
-      output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: 'chunks/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
-      },
-    },
-  },
+  ...(command === 'serve'
+    ? {
+        server: {
+          port: 5173,
+          open: '/src/viewer/index.html',
+        },
+      }
+    : {
+        build: {
+          outDir: 'dist',
+          emptyOutDir: true,
+          rollupOptions: {
+            input: {
+              viewer: resolve(__dirname, 'src/viewer/index.html'),
+              background: resolve(__dirname, 'src/background.js'),
+            },
+            output: {
+              entryFileNames: '[name].js',
+              chunkFileNames: 'chunks/[name]-[hash].js',
+              assetFileNames: 'assets/[name]-[hash][extname]',
+            },
+          },
+        },
+      }),
   plugins: [
     {
       name: 'copy-manifest',
       closeBundle() {
+        if (command !== 'build') return;
         cpSync(resolve(__dirname, 'src/manifest.json'), resolve(__dirname, 'dist/manifest.json'));
         mkdirSync(resolve(__dirname, 'dist/icons'), { recursive: true });
         cpSync(resolve(__dirname, 'public/icons'), resolve(__dirname, 'dist/icons'), { recursive: true });
       },
     },
   ],
-});
+}));
