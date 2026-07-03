@@ -160,14 +160,22 @@ export class PdfEditor {
     this.root.querySelectorAll('[data-tool]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const tool = /** @type {ToolMode} */ (btn.getAttribute('data-tool'));
-        if (tool === 'text') this.onTextTool();
-        else this.setTool(tool);
+        if (tool === this.activeTool) {
+          this.setTool('hand');
+          return;
+        }
+        this.setTool(tool);
       });
     });
 
     this.root.querySelectorAll('[data-pen]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        this.setTool(/** @type {ToolMode} */ (btn.getAttribute('data-pen')));
+        const pen = /** @type {ToolMode} */ (btn.getAttribute('data-pen'));
+        if (pen === this.activeTool) {
+          this.setTool('hand');
+        } else {
+          this.setTool(pen);
+        }
         this._closeDropdowns();
       });
     });
@@ -217,6 +225,7 @@ export class PdfEditor {
       this.strokeColor = this.strokeColorEl.value;
       this._syncStrokeColorDot();
       this.applyToolToAllFabrics();
+      this._applyStrokeColorToActiveText();
     });
 
     this.brushWidthEl.addEventListener('input', () => {
@@ -575,6 +584,32 @@ export class PdfEditor {
     });
   }
 
+  bindTextPlacementEvents(fc) {
+    fc.on('mouse:down', (opt) => {
+      if (this.activeTool !== 'text') return;
+      if (opt.target) {
+        if (opt.target.type === 'textbox') {
+          fc.setActiveObject(opt.target);
+        }
+        return;
+      }
+      const point = fc.getScenePoint(opt.e);
+      this.placeTextAt(fc, point.x, point.y);
+    });
+  }
+
+  bindFabricEvents(fc, pageNum) {
+    const persist = () => {
+      this.pageAnnotations[pageNum] = fc.toJSON();
+      this.recordUndoHistory(fc, pageNum);
+    };
+    fc.on('object:added', persist);
+    fc.on('object:modified', persist);
+    fc.on('object:removed', persist);
+    this.bindLineDrawingEvents(fc);
+    this.bindTextPlacementEvents(fc);
+  }
+
   initUndoStackForPage(pageNum, fc) {
     if (this.pageUndoStacks[pageNum]?.length) return;
     this.pageUndoStacks[pageNum] = [fc.toJSON()];
@@ -589,17 +624,6 @@ export class PdfEditor {
     stack.push(json);
     if (stack.length > 50) stack.shift();
     this.pageUndoStacks[pageNum] = stack;
-  }
-
-  bindFabricEvents(fc, pageNum) {
-    const persist = () => {
-      this.pageAnnotations[pageNum] = fc.toJSON();
-      this.recordUndoHistory(fc, pageNum);
-    };
-    fc.on('object:added', persist);
-    fc.on('object:modified', persist);
-    fc.on('object:removed', persist);
-    this.bindLineDrawingEvents(fc);
   }
 
   invertImageData(imageData) {
@@ -668,21 +692,31 @@ export class PdfEditor {
     const isDrawFree = tool === 'draw-free';
     const isLineDraw = this.isLineDrawTool(tool);
     const isDraw = isDrawFree || isLineDraw;
+    const isText = tool === 'text';
+    const isHand = tool === 'hand';
+
     canvas.isDrawingMode = isDrawFree;
-    canvas.selection = tool === 'text';
-    canvas.skipTargetFind = isDraw;
+    canvas.selection = isText;
+    canvas.skipTargetFind = isHand || isDraw;
+
     if (isDraw) {
       const brushCursor = this.getBrushCursor();
       canvas.defaultCursor = brushCursor;
       canvas.hoverCursor = brushCursor;
       canvas.freeDrawingCursor = brushCursor;
       canvas.setCursor(brushCursor);
+    } else if (isText) {
+      canvas.defaultCursor = 'text';
+      canvas.hoverCursor = 'text';
+      canvas.freeDrawingCursor = 'text';
+      canvas.setCursor('text');
     } else {
       canvas.defaultCursor = 'default';
       canvas.hoverCursor = 'move';
       canvas.freeDrawingCursor = 'crosshair';
       canvas.setCursor('default');
     }
+
     if (isDrawFree) {
       if (!canvas.freeDrawingBrush) canvas.freeDrawingBrush = new PencilBrush(canvas);
       const brush = canvas.freeDrawingBrush;
@@ -702,7 +736,9 @@ export class PdfEditor {
       if (!host) return;
       host.classList.toggle('is-active', this.isFabricActive);
       host.classList.toggle('is-draw', this.isDrawTool);
+      host.classList.toggle('is-text', this.activeTool === 'text');
       if (this.isDrawTool) host.style.cursor = this.getBrushCursor();
+      else if (this.activeTool === 'text') host.style.cursor = 'text';
       else host.style.cursor = '';
     };
     this.pageViewEl.querySelectorAll('.pdf-editor__fabric-host').forEach(updateHost);
@@ -1120,36 +1156,111 @@ export class PdfEditor {
   }
 
   async setTool(tool) {
-    this.activeTool = tool;
-    if (tool !== 'hand') {
-      const canvas = await this.ensureActiveFabric();
-      this.applyToolMode(tool, canvas);
-    } else {
-      this.applyToolToAllFabrics();
+    if (tool === this.activeTool && tool !== 'hand') {
+      tool = 'hand';
     }
+
+    this._deactivateAllFabrics();
+
+    if (tool !== 'hand') {
+      if (!this.pdfLoaded) {
+        this.activeTool = 'hand';
+        this.applyToolToAllFabrics();
+        this._updateToolbarState();
+        return;
+      }
+      const canvas = await this.ensureActiveFabric();
+      if (!canvas) {
+        this.toast('请等待当前页加载完成', 'error');
+        this.activeTool = 'hand';
+        this.applyToolToAllFabrics();
+        this._updateToolbarState();
+        return;
+      }
+    }
+
+    this.activeTool = tool;
+    this.applyToolToAllFabrics();
     this._updateToolbarState();
+    this._closeDropdowns();
   }
 
-  addTextObject(canvas) {
-    const text = new Textbox('双击编辑文字', {
-      left: 60,
-      top: 60,
-      width: 200,
-      fontSize: 18,
-      fill: this.getAnnotationColor(),
-      editable: true,
-    });
-    canvas.add(text);
-    canvas.setActiveObject(text);
+  _deactivateAllFabrics() {
+    const reset = (fc) => {
+      if (!fc) return;
+      const active = fc.getActiveObject();
+      if (active && 'exitEditing' in active && active.isEditing) {
+        active.exitEditing();
+      }
+      fc.discardActiveObject();
+      fc.isDrawingMode = false;
+      fc.skipTargetFind = false;
+      fc.requestRenderAll();
+    };
+    reset(this.pageFabricCanvas);
+    this.scrollFabricMap.forEach(reset);
+  }
+
+  _applyStrokeColorToActiveText() {
+    const canvas = this.getActiveFabricCanvas();
+    const active = canvas?.getActiveObject();
+    if (!active || active.type !== 'textbox') return;
+    active.set('fill', this.getAnnotationColor());
     canvas.requestRenderAll();
   }
 
-  async onTextTool() {
-    this.activeTool = 'text';
-    const canvas = await this.ensureActiveFabric();
-    if (!canvas) return this.toast('请等待当前页加载完成', 'error');
-    this.addTextObject(canvas);
-    await this.setTool('text');
+  _styleTextEditor(text) {
+    const ta = text.hiddenTextarea;
+    if (!ta) return;
+    const scale = text.scaleX || 1;
+    ta.style.fontSize = `${Math.round(text.fontSize * scale)}px`;
+    ta.style.lineHeight = '1.45';
+    ta.style.padding = '10px 14px';
+    ta.style.minWidth = '260px';
+    ta.style.minHeight = '56px';
+    ta.style.color = text.fill;
+    ta.style.background = 'rgb(255 255 255 / 96%)';
+    ta.style.border = '2px solid var(--pe-accent, #2563eb)';
+    ta.style.borderRadius = '8px';
+    ta.style.boxShadow = '0 8px 24px rgb(0 0 0 / 18%)';
+  }
+
+  placeTextAt(canvas, x, y) {
+    const text = new Textbox('输入文字', {
+      left: x,
+      top: y,
+      width: 320,
+      fontSize: 28,
+      fill: this.getAnnotationColor(),
+      editable: true,
+      splitByGrapheme: true,
+      padding: 12,
+      lockScalingFlip: true,
+      cornerSize: 12,
+      transparentCorners: false,
+      borderColor: '#2563eb',
+      editingBorderColor: '#2563eb',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    });
+
+    text.on('editing:entered', () => this._styleTextEditor(text));
+    text.on('changed', () => {
+      if (text.isEditing) this._styleTextEditor(text);
+    });
+    text.on('editing:exited', () => {
+      const content = text.text?.trim();
+      if (!content || content === '输入文字') {
+        canvas.remove(text);
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+      }
+    });
+
+    canvas.add(text);
+    canvas.setActiveObject(text);
+    canvas.requestRenderAll();
+    text.enterEditing();
+    text.selectAll();
   }
 
   async deleteSelected() {

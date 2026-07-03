@@ -333,6 +333,12 @@ body {
   cursor: inherit !important;
 }
 
+.pdf-editor__fabric-host.is-text .canvas-container,
+.pdf-editor__fabric-host.is-text .upper-canvas,
+.pdf-editor__fabric-host.is-text .lower-canvas {
+  cursor: text !important;
+}
+
 .pdf-editor__fabric-host .canvas-container {
   width: 100% !important;
   height: 100% !important;
