@@ -1,0 +1,19 @@
+{
+  "name": "pdf-read",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "icons": "node scripts/generate-icons.mjs"
+  },
+  "dependencies": {
+    "fabric": "^7.4.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.10.38"
+  },
+  "devDependencies": {
+    "vite": "^6.2.0"
+  }
+}
