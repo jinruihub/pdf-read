@@ -9,6 +9,7 @@ import {
   Textbox,
 } from 'fabric';
 import { PDFDocument } from 'pdf-lib';
+import { fetchPdfBytes, pdfFileNameFromUrl } from './extension-bridge.js';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -355,6 +356,7 @@ export class PdfEditor {
   _setLoading(on) {
     this.loading = on;
     this.loadingEl.hidden = !on;
+    if (on) this.emptyEl.hidden = true;
   }
 
   _showView() {
@@ -1066,16 +1068,33 @@ export class PdfEditor {
     }
   }
 
-  async loadPdfFromUrl(url) {
+  async loadPdfFromBytes(data, name, sourceUrl) {
+    this._setLoading(true);
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const blob = await res.blob();
-      const name = url.split('/').pop()?.split('?')[0] || 'document.pdf';
-      await this.loadPdf(new File([blob], name, { type: 'application/pdf' }));
+      const file = new File([data], name || 'document.pdf', { type: 'application/pdf' });
+      file.sourceUrl = sourceUrl;
+      await this.loadPdf(file);
     } catch (err) {
-      this.toast('无法加载远程 PDF', 'error');
+      this.toast('无法加载 PDF', 'error');
       console.error(err);
+      this._setLoading(false);
+      this._showView();
+      this._updateToolbarState();
+    }
+  }
+
+  async loadPdfFromUrl(url) {
+    this._setLoading(true);
+    try {
+      const data = await fetchPdfBytes(url);
+      const name = pdfFileNameFromUrl(url);
+      await this.loadPdfFromBytes(data, name, url);
+    } catch (err) {
+      this.toast('无法加载 PDF', 'error');
+      console.error(err);
+      this._setLoading(false);
+      this._showView();
+      this._updateToolbarState();
     }
   }
 

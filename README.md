@@ -51,9 +51,20 @@ npm run dev:ext
 
 ## 使用
 
-- 点击工具栏上的 PDF Read 图标打开阅读器
-- 在 PDF 链接上右键选择「用 PDF Read 打开」
+安装扩展后，**浏览器打开 PDF 链接会自动进入 PDF Read 阅读/标注界面**，无需手动上传。
+
+- 直接访问 `.pdf` 链接（http / https）
+- 本地 `file://` PDF（需在扩展详情页开启「允许访问文件网址」）
+- 点击工具栏图标可打开空白阅读器
+- 在 PDF 链接上右键 →「用 PDF Read 打开」
 - 将 PDF 文件拖入阅读区域
+
+### 首次使用建议
+
+1. 打开 `chrome://settings/content/pdfDocuments`
+2. 关闭「在 Chrome 中打开 PDF 文件」（改为下载或直接交给扩展拦截）
+3. 若需打开本地 PDF：扩展管理页 → PDF Read → 开启「允许访问文件网址」
+4. 重新 `npm run build` 后在 `chrome://extensions/` 刷新扩展
 
 ## 技术栈
 
